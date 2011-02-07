@@ -1,0 +1,1383 @@
+1.1.8:
+    Core, Setup, etc.:
+    * setup.sh: turn off Python debugging
+    * Cleaned up documentation directory
+    * cluster host: use real IP address for host check if cluster has
+      one (e.g. service IP address)
+
+    Checks & Agents:
+    * Added missing PNP template for check_mk-hr_cpu
+    * hr_fs: inventory now ignores filesystem with size 0,
+      check does not longer crash on filesystems with size 0
+    * logwatch: Fixed typo in 'too many unacknowledged logs' error message
+    * ps: fix bug: inventory with fixed user name now correctly puts
+      that user name into the resulting check - not None.
+    * ps: inventory with GRAB_USER: service description may contain
+      %u. That will be replaced with the user name and thus makes the
+      service description unique.
+    * win_dhcp_pools: better handle invalid agent output
+    * hp_proliant_psu: Fixed multiple PSU detection on one system (Thanks to Andreas Döhler)
+    * megaraid_pdisks: Fixed coding error
+    * cisco_fan: fixed check bug in case of critical state
+    * nfsmounts: fix output (free and used was swapped), make output identical to df
+
+    Livestatus:
+    * Prohibit { and } in regular expressions. This avoids a segmentation
+      fault caused by regcomp in glibc for certain (very unusual) regular
+      expressions.
+    * Table status: new columns external_command_buffer_slots,
+      external_command_buffer_usage and external_command_buffer_max
+      (this was implemented according to an idea and special request of
+       Heinz Fiebig. Please sue him if this breaks anything for you. I was
+       against it, but he thinks that it is absolutely neccessary to have
+       this in version 1.1.8...)
+    * Table status: new columns external_commands and external_commands_rate
+      (also due to Mr. Fiebig - he would have quit our workshop otherwise...)
+    * Table downtimes/comments: new column is_service
+
+    Multisite:
+    * Snapin Performance: show external command per second and usage and
+      size of external command buffer
+    * Downtimes view: Group by hosts and services - just like comments
+    * Fix links for items containing + (e.g. service descriptionen including
+      spaces)
+    * Allow non-ASCII character in downtimes and comments
+    * Added nagvis_base_url to multisite.mk example configuration
+    * Filter for host/service groups: use name instead of alias if 
+      user has no permissions for groups
+
+1.1.8b3:
+    Core, Setup, etc.:
+    * Added some Livestatus LQL examples to documentation
+    * Removed cleanup_autochecks.py. Please use check_mk -u now.
+    * RRA configuration for PNP: install in separate directory and do not
+      use per default, since they use an undocumented feature of PNP.
+
+    Checks & Agents:
+    * postfix_mailq: Changed limit last 6 lines which includes all needed
+		information
+    * hp_proliant_temp/hp_proliant_fans: Fixed wrong variable name
+    * hp_procurve_mem: Fixed wrong mem usage calculation
+    * ad_replication: Works no with domain controller hostnames like DC02,DC02
+    * aironet_client: fix crash on empty variable from SNMP output
+    * 3ware_disks, 3ware_units: hopefully repaired those checks
+    * added rudimentary agent for HP-UX (found in docs/)
+
+    Multisite:
+    * added Perf-O-Meter to "Problems of Host" view
+    * added Perf-O-Meter to "All Services" view
+    * fix bug with cleaning up persistent connections
+    * Multisite now only fetches the available PNP Graphs of hosts/services
+    * Quicksearch: limit number of items in dropdown to 80
+      (configurable via quicksearch_dropdown_limit)
+    * Views of hosts: make counts of OK/WARN/CRIT klickable, new views
+      for services of host in a certain state
+    * Multisite: sort context buttons in views alphabetically
+    * Sidebar drag scrolling: Trying to compensate lost mouse events when
+	leaving the sidebar frame while dragging
+
+    Livestatus:
+    * check for event_broker_options on start
+    * Fix memory leakage caused by Filter: headers using regular expressions
+    * Fix two memory leaks in logfile parser
+
+1.1.8b2:
+    Core, Setup, etc.:
+    * Inventory: skip SNMP-only hosts on non-SNMP checktypes (avoids timeouts)
+    * Improve error output for invalid checks
+    
+    Checks & Agents:
+    * fix bug: run local and plugins also when spaces are in path name
+      (such as C:\Program Files\Check_MK\plugins
+    * mem.vmalloc: Do not create a check for 64 bit architectures, where
+      vmalloc is always plenty
+    * postfix_mailq: limit output to 1000 lines
+    * multipath: handle output of SLES 11 SP1 better
+    * if/if64: output operstatus in check output
+    * if/if64: inventory now detects type 117 (gigabitEthernet) for 3COM
+    * sylo: better handling of counter wraps.
+
+    Multisite:
+    * cleanup implementation of how user settings are written to disk
+    * fix broken links in 'Edit view -> Try out' situation
+    * new macros $HOSTNAME_LOWER$, $HOSTNAME_UPPER$ and $HOSTNAME_TITLE$ for
+      custom notes
+
+1.1.8b1:
+    Core, Setup, etc.:
+    * SNMPv3: allow privProtocol and privPassword to be specified (thanks
+      to Josef Hack)
+    * install_nagios.sh: fix problem with broken filenames produced by wget
+    * install_nagios.sh: updated software to newest versions
+    * install_nagios.sh: fix Apache configuration problem
+    * install_nagios.sh: fix configuration vor PNP4Nagios 0.6.6
+    * config generation: fix host check of cluster hosts
+    * config generation: add missing contact groups for summary hosts
+    * RPM package of agent: do not overwrite xinetd.d/check_mk, but install
+      new version with .rpmnew, if admin has changed his one
+    * legacy_checks: fix missing perfdata, template references where in wrong
+      direction (thanks Daniel Nauck for his precise investigation)
+
+    Checks & Agents:
+    * New check imm_health by Michael Nieporte
+    * rsa_health: fix bug: detection of WARNING state didn't work (was UNKNOWN
+            instead)
+    * check_mk_agent.solaris: statgrab now excludes filesystems. This avoids hanging
+      in case of an NFS problem. Thanks to Divan Santana.
+    * multipath: Handle new output of multipath -l (found on SLES11 SP1)
+    * ntp: fix typo in variable ntp_inventory_mode (fixes inventory problem)
+    * if64: improve output formatting of link speed
+    * cisco_power: inventory function now ignores non-redundant power supplies
+    * zpool_status: new check from Darin Perusich for Solaris zpools
+
+    Multisite:
+    * fix several UTF-8 problems: allow non-ascii characters in host names
+      (must be UTF 8 encoded!)
+    * improve compatibility with Python 2.3
+    * Allow loading custom style sheet overriding Check_MK styles by setting
+      custom_style_sheet in multisite.mk
+    * Host icons show link to detail host, on summary hosts.
+    * Fix sidebar problem: Master Control did not display data correctly
+    * status_host: honor states even if sites hosting status hosts is disabled
+      (so dead-detection works even if local site is disabled)
+    * new config variable start_url: set url for welcome page
+    * Snapin Quicksearch: if no host is matching, automatically search for
+      services
+    * Remove links to legacy Nagios GUI (can be added by user if needed)
+    * Sidebar Quicksearch: fix several annoyances
+    * Views with services of one host: add title with host name and status
+
+    Livestatus:
+    * fix memory leak: lost ~4K on memory on each StatsAnd: or StatsOr:
+      header (found by Sven Nierlein)
+    * fix invalid json output for empty responses (found by Sven Nierlein)
+    * fix Stats: avg ___ for 0 matching elements. Output was '-nan' and is
+      now '0.0'
+    * fix output of floating point numbers: always use exponent and make
+      sure a decimal point is contained (this makes JSON/Python detect
+      the correct type)
+
+1.1.7i5:
+    Core, Setup, etc.:
+    * SNMP: do not load any MIB files (speeds up snmpwalk a lot!)
+    * legacy_checks: new config variable allowing creating classical
+      non-Check_MK checks while using host tags and config options
+    * check_mk_objects.cfg: beautify output, use tabs instead of spaces
+    * check_mk -II: delete only specified checktypes, allow to reinventorize
+      all hosts
+    * New option -O, --reload: Does the same as -R, but reloads Nagios
+      instead of restarting it.
+    * SNMP: Fixed string detection in --snmpwalk calls
+    * SNMP: --snmpwalk does walk the enterprises tree correctly now
+    * SNMP: Fixed missing OID detection in SNMP check processing. There was a problem
+      when the first column had OID gaps in the middle. This affected e.g. the cisco_locif check.
+    * install_nagios.sh: correctly detect Ubuntu 10.04.1
+    * Config output: make order of service deterministic
+    * fix problem with missing default hostgroup
+
+    Multisite:
+    * Sidebar: Improved the quicksearch snapin. It can search for services, 
+      servicegroups and hostgroups now. Simply add a prefix "s:", "sg:" or "hg:"
+      to search for other objects than hosts.
+    * View editor: fix bug which made it impossible to add more than 10 columns
+    * Service details: for Check_MK checks show description from check manual in
+      service details
+    * Notes: new column 'Custom notes' which allows customizable notes
+      on a per host / per service base (see online docu for details)
+    * Configuration: new variable show_livestatus_errors which can be set
+      to False in order to hide error about unreachable sites
+    * hiding views: new configuration variables hidden_views and visible_views
+    * View "Service problems": hide problems of down or unreachable hosts. This
+      makes the view consistant with "Tactical Overview"
+
+    Checks & Agents:
+    * Two new checks: akcp_sensor_humidity and akcp_sensor_temp (Thanks to Michael Nieporte)
+    * PNP-template for kernel: show average of displayed range
+    * ntp and ntp.time: Inventory now per default just creates checks for ntp.time (summary check).
+      This is controlled by the new variable ntp_inventory_mode (see check manuals).
+    * 3ware: Three new checks by Radoslav Bak: 3ware_disks, 3ware_units, 3ware_info
+    * nvidia: agent now only queries GPUCoreTemp and GPUErrors. This avoids
+      a vmalloc leakage of 32kB per call (bug in NVIDIA driver)
+    * Make all SNMP based checks independent of standard MIB files
+    * ad_replication: Fixed syntax errors and unhandled date output when
+      not replicated yet
+    * ifoperstatus: Allowing multiple target states as a list now
+    * cisco_qos: Added new check to monitor traffic in QoS classes on Cisco routers
+    * cisco_power: Added scan function
+    * if64/if/cisco_qos: Traffic is displayed in variable byte scales B/s,KB/s,MB/s,GB/s
+      depending on traffic amount.
+    * if64: really using ifDescr with option if_inventory_uses_description = True
+    * if64: Added option if_inventory_uses_alias to using ifAlias for the item names
+    * if64/if: Fixed bug displaying the out traffic (Perfdata was ok)
+    * if64/if: Added WARN/CRIT thresholds for the bandwidth usage to be given as rates
+    * if64/if: Improved PNP-Templates
+    * if64/if: The ifoperstatus check in if64/if can now check for multiple target states
+    * if64/if: Removing all null bytes during hex string parsing (These signs Confuse nagios pipe)
+    * Fixed hr_mem and hr_fs checks to work with new SNMP format
+    * ups_*: Inventory works now on Riello UPS systems
+    * ups_power: Working arround wrong implemented RFC in some Riello UPS systems (Fixing negative power
+      consumption values)
+    * FreeBSD Agent: Added sections: df mount mem netctr ipmitool (Thanks to Florian Heigl)
+    * AIX: exclude NFS and CIFS from df (thanks to Jörg Linge)
+    * cisco_locif: Using the interface index as item when no interface name or description are set
+
+    Livestatus:
+    * table columns: fix type of num_service_* etc.: was list, is now int (thanks to Gerhard Laußer)
+    * table hosts: repair semantics of hard_state (thanks to Michael Kraus). Transition was one
+      cycle to late in certain situations.
+
+1.1.7i4:
+    Core, Setup, etc.:
+    * Fixed automatic creation of host contactgroups
+    * templates: make PNP links work without rewrite
+
+    Multisite:
+    * Make page handler modular: this allows for custom pages embedded into
+      the Multisite frame work and thus using Multisite for other tasks as
+      well.
+    * status_host: new state "waiting", if status host is still pending
+    * make PNP links work without rewrite
+    * Fix visibility problem: in multisite setups all users could see
+      all objects.
+
+1.1.7i3:
+    Core, Setup, etc.:
+    * Fix extra_nagios_conf: did not work in 1.1.7i2
+    * Service Check_MK now displays overall processing time including
+      agent communication and adds this as performance data
+    * Fix bug: define_contactgroups was always assumed True. That led to duplicate
+      definitions in case of manual definitions in Nagios 
+
+    Checks & Agents:
+    * New Check: hp_proliant_da_phydrv for monitoring the state of physical disks
+      in HP Proliant Servers
+    * New Check: hp_proliant_mem for monitoring the state of memory modules in
+      HP Proliant Servers
+    * New Check: hp_proliant_psu for monitoring the state of power supplies in
+      HP Proliant Servers
+    * PNP-templates: fix several templates not working with MULTIPLE rrds
+    * new check mem.vmalloc for monitoring vmalloc address space in Linux kernel.
+    * Linux agent: add timeout of 2 secs to ntpq 
+    * wmic_process: make check OK if no matching process is found
+
+    Livestatus:
+    * Remove obsolete parameter 'accept_timeout'
+    * Allow disabling idle_timeout and query_timeout by setting them to 0.
+
+    Multisite:
+    * logwatch page: wrap long log lines
+
+1.1.7i2:
+    Incompatible Changes:
+    * Remove config option define_timeperiods and option --timeperiods.
+      Check_MK does not longer define timeperiod definitions. Please
+      define them manually in Nagios.
+    * host_notification_period has been removed. Use host_extra_conf["notification_period"]
+      instead. Same holds for service_notification_periods, summary_host_notification_periods
+      and summary_service_notification_periods.
+    * Removed modes -H and -S for creating config data. This now does
+      the new option -N. Please set generate_hostconf = False if you
+      want only services to be defined.
+
+    Core, Setup, etc.:
+    * New config option usewalk_hosts, triggers --usewalk during
+      normal checking for selected hosts.
+    * new option --scan-parents for automatically finding and 
+      configuring parent hosts (see online docu for details)
+    * inventory check: put detailed list of unchecked items into long
+      plugin output (to be seen in status details)
+    * New configuration variable check_parameters, that allows to
+      override default parameters set by inventory, without defining 
+      manual checks!
+
+    Checks & Agents:
+    * drbd: changed check parameters (please re-inventorize!)
+    * New check ad_replication: Checks active directory replications
+      of domain controllers by using repadm
+    * New check postifx_mailq: Checks mailqueue lengths of postifx mailserves
+    * New check hp_procurve_cpu: Checks the CPU load on HP Procurve switches
+    * New check hp_procurve_mem: Checks the memory usage on HP Procurve switches
+    * New check hp_procurve_sensors: Checks the health of PSUs, FANs and
+      Temperature on HP Procurve switches
+    * New check heartbeat_crm: Monitors the general state of heartbeat clusters
+      using the CRM
+    * New check heartbeat_crm_resources: Monitors the state of resources and nodes
+      in heartbeat clusters using the CRM
+    * *nix agents: output AgentOS: in header
+    * New agent for FreeBSD: It is based on the linux agent. Most of the sections
+      could not be ported easily so the FreeBSD agent provides information for less
+      checks than the linux agent.
+    * heartbeat_crm and heartbeat_crm.resources: Change handling of check parameters.
+      Please reinvenurize and read the updated man page of those checks
+    * New check hp_proliant_cpu: Check the physical state of CPUs in HP Proliant servers
+    * New check hp_proliant_temp: Check the temperature sensors of HP Proliant servers
+    * New check hp_proliant_fans: Check the FAN sensors of HP Proliant servers
+
+    Multisite:
+    * fix chown problem (when nagios user own files to be written
+      by the web server)
+    * Sidebar: Fixed snapin movement problem using older firefox
+      than 3.5.
+    * Sidebar: Fixed IE8 and Chrome snapin movement problems
+    * Sidebar: Fixed IE problem where sidebar is too small
+    * Multisite: improve performance in multi site environments by sending
+      queries to sites in parallel
+    * Multisite: improve performance in high latency situations by
+      allowing persistent Livestatus connections (set "persist" : True 
+      in sites, use current Livestatus version)
+
+    Livestatus:
+    * Fix problems with in_*_period. Introduce global
+      timeperiod cache. This also improves performance
+    * Table timeperiods: new column 'in' which is 0/1 if/not the
+      timeperiod is currently active
+    * New module option idle_timeout. It sets the time in ms
+      Livestatus waits for the next query. Default is 300000 ms (5 min).
+    * New module option query_timeout. It limits the time between
+      two lines of a query (in ms). Default is 10000 ms (10 sec).
+
+1.1.7i1: Core, Setup, etc.:
+    * New option -u for reordering autochecks in per-host-files
+      (please refer to updated documentation about inventory for
+       details)
+    * Fix exception if check_mk is called without arguments. Show
+      usage in that case.
+    * install_nagios.sh: Updated to NagVis 1.5 and fixed download URL
+    * New options --snmpwalk and --usewalk help implemeting checks
+      for SNMP hardware which is not present
+    * SNMP: Automatically detect missing entries. That fixes if64
+      on some CISCO switches.
+    * SNMP: Fix hex string detection (hopefully)
+    * Do chown only if running as root (avoid error messages)
+    * SNMP: SNMPv3 support: use 4-tuple of security level, auth protocol,
+      security name and password instead of a string in snmp_communities
+      for V3 hosts.
+    * SNMP: Fixed hexstring detection on empty strings
+    * New option -II: Is like -I, but removes all previous autochecks
+      from inventorized hosts
+    * install_nagios.sh: Fix detection of PNP4Nagios URL and URL of
+      NagVis
+    * Packager: make sanity check prohibiting creating of package files
+      in Check MK's directories
+    * install_nagios.sh: Support Ubuntu 10.04 (Thanks to Ben)
+      
+    Checks & Agents:
+    * New check ntp.time: Similar to 'ntp' but only honors the system peer
+      (that NTP peer where ntpq -p prints a *).
+    * wmic_process: new check for ressource consumption of windows processes
+    * Windows agent supports now plugins/ and local/ checks
+    * [FIX] ps.perf now correctly detects extended performance data output
+      even if number of matching processes is 0
+    * renamed check cisco_3640_temp to cisco_temp, renamed cisco_temp
+      to cisco_temp_perf, fixed snmp detection of those checks
+    * New check hr_cpu - checking the CPU utilization via SNMP
+    * New check hr_fs - checking filesystem usage via SNMP
+    * New check hr_mem - checking memory usage via SNMP
+    * ps: inventory now can configured on a per host / tag base
+    * Linux: new check nvidia.temp for monitoring temperature of NVIDIA graphics card
+    * Linux: avoid free-ipmi hanging forever on hardware that does not support IPMI
+    * SNMP: Instead of an artificial index column, which some checks use, now
+      the last component of the OID is used as index. That means that inventory
+      will find new services and old services will become UNKNOWN. Please remove
+      the outdated checks.
+    * if: handle exception on missing OIDs
+    * New checks hp_blade* - Checking health of HP BladeSystem Enclosures via SNMP
+    * New check drbd - Checking health of drbd nodes
+    * New SNMP based checks for printers (page counter, supply), contributed
+      by Peter Lauk (many thanks!)
+    * New check cups_queues: Checking the state of cups printer queues
+    * New check heartbeat_nodes: Checking the node state and state of the links
+      of heartbeat nodes
+    * New check heartbeat_rscstatus: Checks the local resource status of
+      a heartbeat node
+    * New check win_dhcp_pools: Checks the usage of Windows DHCP Server lease pools
+
+    Multisite:
+    * New view showing all PNP graphs of services with the same description
+    * Two new filters for host: notifications_enabled and acknowledged
+    * Files created by the webserver (*.mk) are now created with the group
+      configured as common group of Nagios and webserver. Group gets write
+      permissions on files and directories.
+    * New context view: all services of a host group
+    * Fix problems with Umlauts (non-Ascii-characters) in performance data
+    * New context view: all services of a host group
+    * Sidebar snapins can now fetch URLs for the snapin content instead of
+      building the snapin contents on their own.
+    * Added new nagvis_maps snapin which displays all NagVis maps available
+      to the user. Works with NagVis 1.5 and newer.
+
+1.1.6:
+    Core, Setup, etc.:
+    * Service aggregation: new config option aggregation_output_format.
+      Settings this to "multiline" will produce Nagios multiline output
+      with one line for each individual check.
+
+    Multisite:
+    * New painter for long service plugin output (Currently not used
+      by any builtin view)
+
+    Checks & Agents:
+    * Linux agent: remove broken check for /dev/ipmi0
+
+1.1.6rc3:
+    Core, Setup, etc.:
+    * New option --donate for donating live host data to the community.
+      Please refer to the online documentation for details.
+    * Tactical Overview: Fixed refresh timeout typo
+      (Was 16 mins instead of 10 secs)
+
+    Livestatus:
+    * Assume strings are UTF-8 encoded in Nagios. Convert from latin-1 only
+      on invalid UTF-8 sequences (thanks to Alexander Yegorov)
+
+    Multisite:
+    * Correctly display non-ascii characters (fixes exception with 'ascii codec')
+      (Please also update Livestatus to 1.1.6rc3)
+
+1.1.6rc2:
+    Multisite:
+    * Fix bug in Master control: other sites vanished after klicking buttons.
+      This was due to connection error detection in livestatus.py (Bug found
+      by Benjamin Odenthal)
+    * Add theme and baseurl to links to PNP (using features of new PNP4Nagios
+      0.6.4)
+
+    Core, Setup, etc.:
+    * snmp: hopefully fix HEX/string detection now
+
+    Checks & Agents:
+    * md: fix inventory bug on resync=PENDING (Thanks to Darin Perusich)
+
+1.1.6rc1:
+    Multisite:
+    * Repair Perf-O-Meters on webkit based browsers (e.g. Chrome, Safari)
+    * Repair layout on IE7/IE8. Even on IE6 something is working (definitely
+      not transparent PNGs though). Thanks to Lars.
+    * Display host state correct if host is pending (painter "host with state")
+    * Logfile: new filter for plugin output
+    * Improve dialog flow when cloning views (button [EDIT] in views snapin)
+    * Quicksearch: do not open search list if text did not change (e.g. Shift up),
+      close at click into field or snapin.
+
+    Core, Setup, etc.:
+    * Included three patched from Jeff Dairiki dealing with compile flags
+      and .gitignore removed from tarballs
+    * Fix problem with clustered_services_of[]: services of one cluster
+      appeared also on others
+    * Packager: handle broken files in package dir
+    * snmp handling: better error handling in cases where multiple tables
+      are merged (e.g. fc_brocade_port_detailed)
+    * snmp: new handling of unprintable strings: hex dumps are converted
+      into binary strings now. That way all strings can be displayed and
+      no information is lost - nevertheless.
+      
+    Checks & Agents:
+    * Solaris agent: fixed rare df problems on Solaris 10, fix problem with test -f
+      (thanks to Ulf Hoffmann)
+    * Converted all PNP templates to format of 0.6.X. Dropped compatibility
+      with 0.4.X.
+    * Do not use ipmi-sensors if /dev/ipmi0 is missing. ipmi-sensors tries
+      to fiddle around with /dev/mem in that case and miserably fails
+      in some cases (infinite loop)
+    * fjdary60_run: use new binary encoding of hex strings
+    * if64: better error handling for cases where clients do not send all information
+    * apc_symmetra: handle status 'smart boost' as OK, not CRITICAL
+
+    Livestatus:
+    * Delay starting of threads (and handling of socket) until Nagios has
+      started its event loop. This prevents showing services as PENDING 
+      a short time during program start.
+
+1.1.6b3:
+    Multisite:
+    * Quicksearch: hide complete host list if field is emptied via Backspace or Del.
+      Also allow handle case where substring match is unique.
+
+1.1.6b2:
+    Core, Setup, etc.:
+    * Packager: fix unpackaged files (sounds, etc)
+
+    Multisite:
+    * Complete new design (by Tobias Roeckl, Kopf & Herz)
+    * New filters for last service check and last service state change
+    * New views "Recently changed services" and "Unchecked services"
+    * New page for adding sidebar snapins
+    * Drag & Drop for sidebar snapins (thanks to Lars)
+    * Grab & Move for sidebar scrolling (thanks to Lars)
+    * Filter out summary hosts in most views.
+    * Set browser refresh to 30 secs for most views
+    * View host status: added a lot of missing information
+    * View service status: also added information here
+    * Make sure, enough columns can be selected in view editor
+    * Allow user to change num columns and refresh directly in view
+    * Get back to where you came after editing views
+    * New sidebar snapin "Host Matrix"
+    * New feature "status_host" for remote sites: Determine connection
+      state to remote side by considering a certain host state. This
+      avoids livestatus time outs to dead sites.
+    * Sidebar snapin site status: fix reload problem
+    * New Perf-O-Meters displaying service performance data
+    * New snapin "Custom Links" where you easily configure your own
+      links via multisite.mk (see example in new default config file)
+    * Fixed problem when using only one site and that is not local
+
+    Livestatus:
+    * new statistics columns: log_messages and log_messages_rate
+    * make statistics average algorithm more sluggish
+
+1.1.5i3:
+     Core, Setup, etc.:
+     * New Check_MK packager (check_mk -P)
+
+1.1.5i2:
+     Core, Setup, etc.:
+     * install_nagios.sh: add missing package php5-iconv for SLES11
+
+     Checks & Agents:
+     * if64: new SNMP check for network interfaces. Like if, but uses 64 bit
+       counters of modern switches. You might need to configure bulkwalk_hosts.
+     * Linux agent: option -d enabled debug output
+     * Linux agent: fix ipmi-sensors cache corruption detection
+     * New check for temperature on Cisco devices (cisco_3640_temp)
+     * recompiled waitmax with dietlibc (fixed incompatibility issues
+       on older systems)
+
+     Multisite:
+     * Filters for groups are negateable.
+
+1.1.5i1:
+     Checks & Agents:
+     * uptime: new check for system uptime (Linux)
+     * if: new SNMP check for network interfaces with very detailed traffic,
+       packet and error statistics - PNP graphs included
+
+     Multisite:
+     * direct integration of PNP graphs into Multisite views
+     * Host state filter: renamed HTML variables (collision with service state). You
+       might need to update custom views using a filter on host states.
+     * Tactical overview: exclude services of down hosts from problems, also exclude
+       summary hosts
+     * View host problems/service problems: exclude summary hosts, exclude services
+       of down hosts
+     * Simplified implementation of sidebar: sidebar is not any longer embeddeable.
+     * Sidebar search: Added host site to be able to see the context links on
+       the result page
+     * Sidebar search: Hitting enter now closes the hint dropdown in all cases
+
+1.1.5i0:
+      Core, Setup, etc.:
+      * Ship check-specific rra.cfg's for PNP4Nagios (save much IO and disk space)
+      * Allow sections in agent output to apear multiple times
+      * cleanup_autochecks.py: new option -f for directly activating new config
+      * setup.sh: better detection for PNP4Nagios 0.6
+      * snmpwalk: use option -Oa, inhibit strings to be output as hex if an umlaut
+        is contained.
+
+      Checks & Agents:
+      * local: allow more than once performance value, separated by pipe (|)
+      * ps.perf: also send memory and CPU usage (currently on Linux and Solaris)
+      * Linux: new check for filesystems mount options
+      * Linux: new very detailed check for NTP synchronization
+      * ifoperstatus: inventory honors device type, per default only Ethernet ports
+        will be monitored now
+      * kernel: now inventory is supported and finds pgmajfault, processes (per/s)
+        and context switches
+      * ipmi_sensors: Suppress performance data for fans (save much IO/space)
+      * dual_lan_check: fix problem which using MRPE
+      * apc_symmetra: PNP template now uses MIN for capacity (instead of AVERAGE)
+      * fc_brocade_port_detailed: PNP template now uses MAX instead of AVERAGE
+      * kernel: fix text in PNP template
+      * ipmi_sensors: fix timeout in agent (lead to missing items)
+      * multipath: allow alias as item instead of uuid
+      * caching agent: use /var/cache/check_mk as cache directory (instead of /etc/check_mk)
+      * ifoperstatus: is now independent of MIB
+
+      Multisite:
+      * New column host painter with link to old Nagios services
+      * Multisite: new configuration parameter default_user_role
+      
+      Livestatus:
+      * Add missing LDFLAGS for compiling (useful for -g)
+
+1.1.4:
+      Summary:
+      * A plentitude of problem fixes (including MRPE exit code bug)
+      * Many improvements in new Multisite GUI
+      * Stability and performance improvements in Livestatus
+
+      Core, Setup, etc.:
+      * Check_MK is looking for main.mk not longer in the current and home
+        directory
+      * install_nagios.sh: fix link to Check_MK in sidebar
+      * install_nagios.sh: switch PNP to version 0.6.3
+      * install_nagios.sh: better Apache-Config for Multisite setup
+      * do not search main.mk in ~ and . anymore (brought only trouble) 
+      * clusters: new variable 'clustered_services_of', allowing for overlapping
+         clusters (as proposed by Jörg Linge)
+      * install_nagios.sh: install snmp package (needed for snmp based checks)
+      * Fix ower/group of tarballs: set them to root/root
+      * Remove dependency from debian agent package    
+      * Fixed problem with inventory when using clustered_services
+      * tcp_connect_timeout: Applies now only for connect(), not for
+        time of data transmission once a connection is established
+      * setup.sh now also works for Icinga
+      * New config parameter debug_log: set this to a filename in main.mk and you
+        will get a debug log in case if 'invalid output from plugin...'
+      * ping-only-hosts: When ping only hosts are summarized, remove Check_MK and
+        add single PING to summary host.
+      * Service aggregation: fix state relationship: CRIT now worse than UNKNOWN 
+      * Make extra_service_conf work also for autogenerated PING on ping-only-hosts
+        (groups, contactgroups still missing)
+
+      Checks & Agents:
+      * mrpe in Linux agent: Fix bug introduced in 1.1.3: Exit status of plugins was
+        not honored anymore (due to newline handling)
+      * mrpe: allow for sending check_command to PNP4Nagios (see MRPE docu)
+      * Logwatch GUI: fix problem on Python 2.4 (thanks to Lars)
+      * multipath: Check is now less restrictive when parsing header lines with
+        the following format: "<alias> (<id>)"
+      * fsc_ipmi_mem_status: New check for monitoring memory status (e.g. ECC)
+         on FSC TX-120 (and maybe other) systems.
+      * ipmi_sensors in Linux agent: Fixed compatibility problem with new ipmi
+        output. Using "--legacy-output" parameter with newer freeipmi versions now.
+      * mrpe: fix output in Solaris agent (did never work)
+      * IBM blade center: new checks for chassis blowers, mediatray and overall health
+      * New caching agent (wrapper) for linux, supporting efficient fully redundant
+        monitoring (please read notes in agents/check_mk_caching_agent)
+      * Added new smbios_sel check for monitoring the System Event Log of SMBIOS.
+      * fjdarye60_rluns: added missing case for OK state
+      * Linux agent: The xinetd does not log each request anymore. Only
+        failures are logged by xinetd now. This can be changed in the xinetd
+	configuration files.
+      * Check df: handle mountpoints containing spaces correctly 
+        (need new inventorization if you have mountpoints with spaces)
+      * Check md on Linux: handle spare disks correctly
+      * Check md on Linux: fix case where (auto-read-only) separated by space
+      * Check md on Linux: exclude RAID 0 devices from inventory (were reported as critical)
+      * Check ipmi: new config variable ipmi_ignore_nr
+      * Linux agent: df now also excludes NFSv4
+      * Wrote man-page for ipmi check
+      * Check mrpe: correctly display multiline output in Nagios GUI
+      * New check rsa_health for monitoring IBM Remote Supervisor Adapter (RSA)
+      * snmp scan: suppress error messages of snmpget
+      * New check: cpsecure_sessions for number of sessions on Content Security Gateway
+      * Logwatch GUI: move acknowledge button to top, use Multisite layout,
+         fix several layout problem, remove list of hosts
+      * Check logwatch: limit maximum size of stored log messages (configurable
+        be logwatch_max_filesize)
+      * AIX agent: fix output of MRPE (state and description was swapped)
+      * Linux agent: fixed computation of number of processors on S390
+      * check netctr: add missing perfdata (was only sent on OK case)
+      * Check sylo: New check for monitoring the sylo state
+      
+      Livestatus:
+      * Table hosts: New column 'services' listing all services of that host
+      * Column servicegroups:members: 'AuthUser' is now honored
+      * New columns: hosts:services_with_state and servicegroups:members_with_state
+      * New column: hostgroup:members_with_state
+      * Columns hostgroup:members and hostgroup:members_with_state honor AuthUser
+      * New rudimentary API for C++
+      * Updates API for Python
+      * Make stack size of threads configurable
+      * Set stack size of threads per default o 64 KB instead of 8 MB
+      * New header Localtime: for compensating time offsets of remote sites
+      * New performance counter for fork rate
+      * New columns for hosts: last_time_{up,down,unreachable}
+      * New columns for services: last_time_{ok,warning,critical,unknown}
+      * Columns with counts honor now AuthUser
+      * New columns for hosts/services: modified_attributes{,_list}
+      * new columns comments_with_info and downtimes_with_info
+      * Table log: switch output to reverse chronological order!
+      * Fix segfault on filter on comments:host_services
+      * Fix missing -lsocket on Solaris
+      * Add missing SUN_LEN (fixed compile problem on Solaris)
+      * Separators: remote sanitiy check allowing separators to be equal
+      * New output format "python": declares strings as UTF-8 correctly
+      * Fix segault if module loaded without arguments
+
+      Multisite:
+      * Improved many builtin views
+      * new builtin views for host- and service groups
+      * Number of columns now configurable for each layout (1..50)
+      * New layout "tiled"
+      * New painters for lists of hosts and services in one column
+      * Automatically compensate timezone offsets of remote sites
+      * New datasources for downtimes and comments
+      * New experimental datasource for log
+      * Introduce limitation, this safes you from too large output
+      * reimplement host- and service icons more intelligent
+      * Output error messages from dead site in Multisite mode
+      * Increase wait time for master control buttons from 4s to 10s
+      * Views get (per-view) configurable browser automatic reload interval
+      * Playing of alarm sounds (configurable per view)
+      * Sidebar: fix bookmark deletion problem in bookmark snapin
+      * Fixed problem with sticky debug
+      * Improve pending services view
+      * New column with icon with link to Nagios GUI
+      * New icon showing items out of their notification period.
+      * Multisite: fix bug in removing all downtimes
+      * View "Hostgroups": fix color and table heading
+      * New sidebar snapin "Problem hosts"
+      * Tactical overview: honor downtimes
+      * Removed filter 'limit'. Not longer needed and made problems
+        with new auto-limitation.
+      * Display umlauts from Nagios comments correctly (assuming Latin-1),
+         inhibit entering of umlauts in new comments (fixes exception)
+      * Switched sidebar from synchronous to asynchronous requests
+      * Reduced complete reloads of the sidebar caused by user actions
+      * Fix reload problem in frameset: Browser reload now only reloads
+        content frames, not frameset.
+
+
+1.1.3:
+
+      Core, Setup, etc.:
+      * Makefile: make sure all files are world readable
+      * Clusters: make real host checks for clusters (using check_icmp with multiple IP addresses)
+      * check_mk_templates: remove action_url from cluster and summary hosts (they have no performance data)
+      * check_mk_template.cfg: fix typo in notes_url
+      * Negation in binary conf lists via NEGATE (clustered_services, ingored_services,
+	bulkwalk_hosts, etc).
+      * Better handling of wrapping performance counters
+      * datasource_programs: allow <HOST> (formerly only <IP>)
+      * new config variable: extra_nagios_conf: string simply added to Nagios
+        object configuration (for example for define command, etc.)
+      * New option --flush: delete runtime data of some or all hosts
+      * Abort installation if livestatus does not compile.
+      * PNP4Nagios Templates: Fixed bug in template file detection for local checks
+      * nagios_install.sh: Added support for Ubuntu 9.10
+      * SNMP: handle multiline output of snmpwalk (e.g. Hexdumps)
+      * SNMP: handle ugly error output of snmpwalk
+      * SNMP: allow snmp_info to fetch multiple tables
+      * check_mk -D: sort hostlist before output
+      * check_mk -D: fix output: don't show aggregated services for non-aggregated hosts
+      * check_mk_templates.cfg: fix syntax error, set notification_options to n
+
+      Checks & Agents:
+      * logwatch: fix authorization problem on web pages when acknowledging
+      * multipath: Added unhandled multipath output format (UUID with 49 signs)
+      * check_mk-df.php: Fix locale setting (error of locale DE on PNP 0.6.2)
+      * Make check_mk_agent.linux executable
+      * MRPE: Fix problems with quotes in commands
+      * multipath: Fixed bug in output parser
+      * cpu: fixed bug: apply level on 15min, not on 1min avg
+      * New check fc_brocade_port_detailed
+      * netctrl: improved handling of wrapped counters
+      * winperf: Better handling of wrapping counters
+      * aironet_client: New check for number of clients and signal
+        quality of CISCO Aironet access points
+      * aironet_errors: New check for monitoring CRC errors on
+        CISCO Aironet access points
+      * logwatch: When Agent does not send a log anymore and no local logwatch
+                  file present the state will be UNKNOWN now (Was OK before).
+      * fjdarye60_sum: New check for summary status of Fidary-E60 devices
+      * fjdarye60_disks: New check for status of physical disks
+      * fjdarye60_devencs: New check for status of device enclosures
+      * fjdarye60_cadaps: New check for status of channel adapters
+      * fjdarye60_cmods: New check for status of channel modules
+      * fjdarye60_cmods_flash: New check for status of channel modules flash
+      * fjdarye60_cmods_mem: New check for status of channel modules memory
+      * fjdarye60_conencs: New check for status of controller enclosures
+      * fjdarye60_expanders: New check for status of expanders
+      * fjdarye60_inletthmls: New check for status of inlet thermal sensors
+      * fjdarye60_thmls: New check for status of thermal sensors
+      * fjdarye60_psus: New check for status of PSUs
+      * fjdarye60_syscaps: New check for status of System Capacitor Units
+      * fjdarye60_rluns: New check for RLUNs
+      * lparstat_aix: New check by Joerg Linge
+      * mrpe: Handles multiline output correctly (only works on Linux,
+	      Agents for AIX, Solaris still need fix).
+      * df: limit warning and critical levels to 50/60% when using a magic number
+      * fc_brocade_port_detailed: allow setting levels on in/out traffic, detect
+         baudrate of inter switch links (ISL). Display warn/crit/baudrate in
+	 PNP-template
+
+      MK Livestatus:
+      * fix operators !~ and !~~, they didn't work (ever)
+      * New headers for waiting (please refer to online documentation)
+      * Abort on errors even if header is not fixed16
+      * Changed response codes to better match HTTP
+      * json output: handle tab and other control characters correctly
+      * Fix columns host:worst_service_state and host:worst_service_hard_state
+      * New tables servicesbygroup, servicesbyhostgroup and hostsbygroup
+      * Allow to select columns with table prefix, e.g. host_name instead of name
+        in table hosts. This does not affect the columns headers output by
+	ColumnHeaders, though.
+      * Fix invalid json output of group list column in tables hosts and services
+      * Fix minor compile problem.
+      * Fix hangup on AuthUser: at certain columns
+      * Fix some compile problems on Solaris
+
+      Multisite:
+      * Replaced Multiadmin with Multisite.
+
+
+1.1.2:
+      Summary:
+      * Lots of new checks
+      * MK Livestatus gives transparent access to log files (nagios.log, archive/*.log)
+      * Many bug fixes
+
+      MK Livestatus:
+      * Added new table "log", which gives you transparent access to the Nagios log files!
+      * Added some new columns about Nagios status data to stable 'status'
+      * Added new table "comments"
+      * Added logic for count of pending service and hosts
+      * Added several new columns in table 'status' 
+      * Added new columns flap_detection and obsess_over_services in table services
+      * Fixed bug for double columns: filter truncated double to int
+      * Added new column status:program_version, showing the Nagios version
+      * Added new column num_services_pending in table hosts
+      * Fixed several compile problems on AIX
+      * Fixed bug: queries could be garbled after interrupted connection
+      * Fixed segfault on downtimes:contacts
+      * New feature: sum, min, max, avg and std of columns in new syntax of Stats:
+
+      Checks & Agents:
+      * Check ps: this check now supports inventory in a very flexible way. This simplifies monitoring a great number of slightly different processes such as with ORACLE or SAP.
+      * Check 'md': Consider status active(auto-read-only) as OK
+      * Linux Agent: fix bug in vmware_state
+      * New Checks for APC Symmetra USV
+      * Linux Agent: made <<<meminfo>>> work on RedHat 3.
+      * New check ps.perf: Does the same as ps, but without inventory, but with performance data
+      * Check kernel: fixed missing performance data
+      * Check kernel: make CPU utilization work on Linux 2.4
+      * Solaris agent: don't use egrep, removed some bashisms, output filesystem type zfs or ufs
+      * Linux agent: fixed problem with nfsmount on SuSE 9.3/10.0
+      * Check 'ps': fix incompability with old agent if process is in brackets
+      * Linux agent: 'ps' now no longer supresses kernel processes
+      * Linux agent: make CPU count work correctly on PPC-Linux
+      * Five new checks for monitoring DECRU SANs
+      * Some new PNP templates for existing checks that still used the default templates
+      * AIX Agent: fix filesystem output
+      * Check logwatch: Fix problem occuring at empty log lines
+      * New script install_nagios.sh that does the same as install_nagios_on_lenny.sh, but also works on RedHat/CentOS 5.3.
+      * New check using the output of ipmi-sensors from freeipmi (Linux)
+      * New check for LSI MegaRAID disks and arrays using MegaCli (based on the driver megaraid_sas) (Linux)
+      * Added section <<<cpu>>> to AIX and Solaris agents
+      * New Check for W&T web thermograph (webthermometer)
+      * New Check for output power of APC Symmetra USP
+      * New Check for temperature sensors of APC Symmetra WEB/SNMP Management Card.
+      * apc_symmetra: add remaining runtime to output
+      * New check for UPS'es using the generic UPS-MIB (such as GE SitePro USP)
+      * Fix bug in PNP-template for Linux NICs (bytes and megabytes had been mixed up).
+      * Windows agent: fix bug in output of performance counters (where sometimes with , instead of .)
+      * Windows agent: outputs version if called with 'version'
+      
+      Core, Setup, etc.:
+      * New SNMP scan feature: -I snmp scans all SNMP checks (currently only very few checks support this, though)
+      * make non-bulkwalk a default. Please edit bulkwalk_hosts or non_bulkwalk_hosts to change that
+      * Improve setup autodetection on RedHat/CentOS.  Also fix problem with Apache config for Mutliadmin: On RedHat Check_MK's Apache conf file must be loaded after mod_python and was thus renamed to zzz_check_mk.conf.
+      * Fix problem in Agent-RPM: mark xinetd-configfile with %config -> avoid data loss on update
+      * Support PNP4Nagios 0.6.2
+      * New setup script "install_nagios.sh" for installing Nagios and everything else on SLES11
+      * New option define_contactgroups: will automatically create contactgroup definitions for Nagios
+
+1.1.0:
+      * Fixed problems in Windows agent (could lead
+        to crash of agent in case of unusal Eventlog
+	messages)
+      * Fixed problem sind 1.0.39: recompile waitmax for
+        32 Bit (also running on 64)
+      * Fixed bug in cluster checks: No cache files
+        had been used. This can lead to missing logfile
+	messages.
+      * Check kernel: allow to set levels (e.g. on 
+	pgmajfaults)
+      * Check ps now allows to check for processes owned
+        by a specific user (need update of Linux agent)
+      * New configuration option aggregate_check_mk: If
+        set to True, the summary hosts will show the
+	status auf check_mk (default: False)
+      * Check winperf.cpuusage now supports levels
+        for warning and critical. Default levels are
+	at 101 / 101
+      * New check df_netapp32 which must be used
+        for Netapps that do not support 64 bit 
+	counters. Does the same as df_netapp
+      * Symlink PNP templates: df_netapp32 and
+        df_netapp use same template as df
+      * Fix bug: ifoperstatus does not produce performance
+        data but said so.
+      * Fix bug in Multiadmin: Sorting according to
+        service states did not work
+      * Fix two bugs in df_netapp: use 64 bit counters
+        (32 counter wrap at 2TB filesystems) and exclude
+       	snapshot filesystems with size 0 from inventory.
+      * Rudimentary support for monitoring ESX: monitor
+        virtual filesystems with 'vdf' (using normal df
+	check of check_mk) and monitor state of machines 
+	with vcbVmName -s any (new check vmware_state).
+      * Fixed bug in MRPE: check failed on empty performance
+        data (e.g. from check_snmp: there is emptyness
+        after the pipe symbol sometimes)
+      * MK Livestatus is now multithreaded an can
+        handle up to 10 parallel connections (might
+        be configurable in a future version).
+      * mk_logwatch -d now processes the complete logfile
+        if logwatch.state is missing or not including the
+	file (this is easier for testing)
+      * Added missing float columns to Livestatus.
+      * Livestatus: new header StatsGroupBy:
+      * First version with "Check_MK Livestatus Module"!
+        setup.sh will compile, install and activate
+	Livestatus per default now. If you do not want
+	this, please disable it by entering <tt>no</tt>,
+	when asked by setup.
+      * New Option --paths shows all installation, config
+        and data paths of Check_mk and Nagios
+      * New configuration variable define_hostgroups and
+        define service_groups allow you to automatically
+        create host- and service groups - even with aliases.
+      * Multiadmin has new filter for 'active checks enabled'.
+      * Multiadmin filter for check_command is now a drop down list.
+      * Dummy commands output error message when passive services
+        are actively checked (by accident)
+      * New configuration option service_descriptions allows to
+        define customized service descriptions for each check type
+      * New configuration options extra_host_conf, extra_summary_host_conf
+        and extra_service_conf allow to define arbitrary Nagios options
+	in host and service defitions (notes, icon_image, custom variables,
+        etc)
+      * Fix bug: honor only_hosts also at option -C
+
+
+1.0.39:
+      * New configuration variable only_hosts allows
+	you to limit check_mk to a subset of your
+	hosts (for testing)
+      * New configuration parameter mem_extended_perfdata
+	sends more performance data on Linux (see 
+	check manual for details)
+      * many improvements of Multiadmin web pages: optionally 
+	filter out services which are (not) currently in downtime
+	(host or service itself), optionally (not) filter out summary
+	hosts, show host status (down hosts), new action
+	for removing all scheduled downtimes of a service.
+	Search results will be refreshed every 90 seconds.
+	Choose between two different sorting orders.
+	Multadmin now also supports user authentication
+      * New configuration option define_timeperiods, which
+	allows to create Nagios timeperiod definitions.
+	This also enables the Multiadmin tools to filter
+	out services which are currently not in their
+	notification interval.
+      * NIC check for Linux (netctr.combined) now supports
+	checking of error rates
+      * fc_brocade_port: New possibility of monitoring
+	CRC errors and C3 discards
+      * Fixed bug: snmp_info_single was missing
+        in precompiled host checks
+	
+1.0.38:
+      * New: check_mk's multiadmin tool (Python based
+	web page). It allows mass administration of
+	services (enable/disable checks/notifications, 
+	acknowledgements, downtimes). It does not need
+	Nagios service- or host groups but works with
+	a freeform search.
+      * Remove duplicate <?php from the four new 
+	PNP templates of 1.0.37.
+      * Linux Agent: Kill hanging NFS with signal 9
+	(signal 15 does not always help)
+      * Some improvements in autodetection. Also make
+	debug mode: ./autodetect.py: This helps to
+	find problems in autodetection.
+      * New configuration variables generate_hostconf and
+	generate_dummy_commands, which allows to suppress
+	generation of host definitions for Nagios, or 
+	dummy commands, resp.
+      * Now also SNMP based checks use cache files.
+      * New major options --backup and --restore for
+	intelligent backup and restore of configuration
+	and runtime data
+      * New variable simulation_mode allows you to dry
+	run your Nagios with data from another installation.
+      * Fixed inventory of Linux cpu.loads and cpu.threads
+      * Fixed several examples in checks manpages
+      * Fixed problems in install_nagios_on_lenny.sh
+      * ./setup.sh now understands option --yes: This
+        will not output anything except error messages
+	and assumes 'yes' to all questions
+      * Fix missing 'default.php' in templates for
+	local
+	
+1.0.37:
+      * IMPORTANT: Semantics of check "cpu.loads" has changed.
+	Levels are now regarded as *per CPU*. That means, that
+	if your warning level is at 4.0 on a 2 CPU machine, then 
+	a level of 8.0 is applied.
+      * On check_mk -v now also ouputs version of check_mk
+      * logfile_patterns can now contain host specific entries.
+	Please refer to updated online documentation for details.
+      * Handling wrapping of performance counters. 32 and 64 bit
+	counters should be autodetected and handled correctly.
+	Counters wrapping over twice within one check cycle
+	cannot be handled, though.
+      * Fixed bug in diskstat: Throughput was computed twice
+	too high, since /proc/diskstats counts in sectors (512 Bytes)
+	not in KB
+      * The new configuration variables bulkwalk_hosts and
+	non_bulkwalk_hosts, that allow 	to specify, which hosts 
+	support snmpbulkwalk (which is
+	faster than snmpwalk) and which not. In previos versions,
+	always bulk walk was used, but some devices do not support
+	that.
+      * New configuration variable non_aggregated_hosts allows
+	to exclude hosts generally from service aggregation.
+      * New SNMP based check for Rittal CMC TC 
+	(ComputerMultiControl-TopConcept) Temperature sensors 
+      * Fixed several problems in autodetection of setup
+      * Fixed inventory check: exit code was always 0
+	for newer Python versions.
+      * Fixed optical problem in check manual pages with
+	newer version of less.
+      * New template check_mk-local.php that tries to
+	find and include service name specific templates.
+	If none is found, default.php will be used.
+      * New PNP templates check_mk-kernel.php for major page
+	faults, context switches and process creation
+      * New PNP template for cpu.threads (Number of threads)
+      * Check nfsmounts now detects stale NFS handles and
+	triggers a warning state in that case
+
+1.0.36:
+      * New feature of Linux/UNIX Agent: "MRPE" allows
+	you to call Nagios plugins by the agent. Please
+	refer to online documentation for details.
+      * Fix bug in logwatch.php: Logfiles names containing spaces
+	now work.
+      * Setup.sh now automatically creates cfg_dir if
+	none found in nagios.cfg (which is the case for the
+	default configuration of a self compiled Nagios)
+      * Fix computation of CPU usage for VMS.
+      * snmp_hosts now allows config-list syntax. If you do
+	not define snmp_hosts at all, all hosts with tag
+	'snmp' are considered to be SNMP hosts. That is 
+	the new preferred way to do it. Please refer
+	to the new online documentation.
+      * snmp_communities now also allows config-list syntax
+	and is compatible to datasource_programs. This allows
+	to define different SNMP communities by making use
+	of host tags.
+      * Check ifoperstatus: Monitoring of unused ports is
+	now controlled via ifoperstatus_monitor_unused.
+      * Fix problem in Windows-Agent with cluster filesystems:
+	temporarily non-present cluster-filesystems are ignored by
+	the agent now.
+      * Linux agent now supports /dev/cciss/d0d0... in section
+	<<<diskstat>>>
+      * host configuration for Nagios creates now a variable
+	'name host_$HOSTNAME' for each host. This allows
+	you to add custom Nagios settings to specific hosts
+	in a quite general way.
+      * hosts' parents can now be specified with the
+	variable 'parents'. Please look at online documentation
+	for details.
+      * Summary hosts now automatically get their real host as a
+	parent. This also holds for summary cluster hosts.
+      * New option -X, --config-check that checks your configuration
+	for invalid variables. You still can use your own temporary
+	variables if you prefix them with an underscore.
+	IMPORTANT: Please check your configuration files with
+	this option. The check may become an implicit standard in
+	future versions.
+      * Fixed problem with inventory check on older Python 
+	versions.
+      * Updated install_nagios_on_lenny.sh to Nagios version
+	3.2.0 and fixed several bugs.
+
+1.0.35:
+      * New option -R/--restart that does -S, -H and -C and
+	also restarts Nagios, but before that does a Nagios
+	config check. If that fails, everything is rolled
+	back and Nagios keeps running with the old configuration.
+      * PNP template for PING which combines RTA and LOSS into
+	one graph.
+      * Host check interval set to 1 in default templates.
+      * New check for hanging NFS mounts (currently only
+	on Linux)
+      * Changed check_mk_templates.cfg for PING-only hosts:
+	No performance data is processed for the PING-Check
+	since the PING data is already processed via the
+	host check (avoid duplicate RRDs)
+      * Fix broken notes_url for logwatch: Value from setup.sh
+	was ignored and always default value taken.
+      * Renamed config variable mknagios_port to agent_port
+	(please updated main.mk if you use that variable)
+      * Renamed config variable mknagios_min_version to
+	agent_min_version (update main.mk if used)
+      * Renamed config variable mknagios_autochecksdir to 
+	autochecksdir (update main.mk if used)
+      * configuration directory for Linux/UNIX agents is
+	now configurable (default is /etc/check_mk)
+      * Add missing configuration variable to precompiled
+	checks (fix problem when using clusters)
+      * Improved multipath-check: Inventory now determines
+	current number of paths. And check output is more
+	verbose.
+      * Mark config files as config files in RPM. RPM used
+	to overwrite main.mk on update!
+	
+1.0.34:
+      * Ship agents for AIX and SunOS/Solaris (beta versions).
+      * setup script now autodetects paths and settings of your
+	running Nagios
+      * Debian package of check_mk itself is now natively build
+	with paths matching the prepackaged Nagios on Debian 5.0
+      * checks/df: Fix output of check: percentage shown in output
+	did include reserved space for root where check logic did
+	not. Also fix logic: account reserved space as used - not
+	as avail.
+      * checks/df: Exclude filesystems with size 0 from inventory.
+      * Fix bug with host tags in clusters -> precompile did not
+	work.
+      * New feature "Inventory Check": Check for new services. Setting
+	inventory_check_interval=120 in main.mk will check for new services
+	every 2 hours on each host. Refer to online documentation
+	for more details.
+      * Fixed bug: When agent sends invalid information or check
+	has bug, check_mk now handles this gracefully
+      * Fixed bug in checks/diskstat and in Linux agent. Also
+	IDE disks are found. The inventory does now work correctly
+	if now disks are found.
+      * Determine common group of Apache and Nagios at setup.
+	Auto set new variable www_group which replaces logwatch_groupid.
+	Fix bug: logwatch directories are now created with correct
+	ownership when check_mk is called manually as root.
+      * Default templates: notifications options for hosts and
+	services now include also recovery, flapping and warning
+	events.
+      * Windows agent: changed computation of RAM and SWAP usage
+	(now we assume that "totalPageFile" includes RAM *and*
+	SWAP).
+      * Fix problem with Nagios configuration files: remove
+	characters Nagios considers as illegal from service
+	descriptions.
+      * Processing of performance data (check_icmp) for host
+        checks and PING-only-services now set to 1 in default
+	templates check_mk_templates.cfg.
+      * New SNMP checks for querying FSC ServerView Agent: fsc_fans,
+	fsc_temp and fsc_subsystems. Successfully tested with agents
+	running	on Windows and Linux.
+      * RPM packaged agent tested to be working on VMWare ESX 4.0 
+	(simply install RPM package with rpm -i ... and open port 
+	in firewall with "esxcfg-firewall -o 6556,tcp,in,check_mk")
+      * Improve handling of cache files: inventory now uses cache
+	files only if they are current and if the hosts are not
+	explicitely specified.
+	
+1.0.33:
+      * Made check_mk run on Python 2.3.4 (as used in CentOS 4.7
+	und RedHat 4.7). 
+      * New option -M that prints out manual pages of checks.
+	Only a few check types are documented yet, but more will
+	be following.
+      * Package the empty directory /usr/lib/check_mk_agent/plugins
+	and ../local into the RPM and DEB package of the agent
+      * New feature: service_dependencies. check_mk lets you comfortably
+	create Nagios servicedependency definitions for you and also
+	supports them by executing the checks in an optimal order.
+      * logwatch.php: New button for hiding the context messages.
+	This is a global setting for all logfiles and its state is
+	stored in a cookie.
+	
+1.0.32:
+      * IMPORTANT: Configuration variable datasource_programs is now
+        analogous to that of host_groups. That means: the order of
+        program and hostlist must be swapped!
+      * New option --fake-dns, useful for tests with non-existing
+	hosts.
+      * Massive speed improvement for -S, -H and -C
+      * Fixed bug in inventory of clusters: Clustered services where
+	silently dropped (since introduction of host tags). Fixed now.
+      * Fixed minor bug in inventory: Suppress DNS lookup when using
+	--no-tcp
+      * Fixed bug in cluster handling: Missing function strip_tags()
+	in check_mk_base.py was eliminated.
+      * Changed semantics of host_groups, summary_host_groups,
+	host_contactgroups, and summary_host_groups for clusters. 
+	Now the cluster names will be relevant, not
+	the names of the nodes. This allows the cluster hosts to
+	have different host/contactgroups than the nodes. And it is more
+	consistent with other parts of the configuration.
+      * Fixed bug: datasource_programs on cluster nodes did not work
+	when precompiling
+
+1.0.31:
+      * New option -D, --dump that dumps all configuration information
+	about one, several or all hosts
+	New config variables 'ignored_checktypes' and 'ignored_services',
+        which allow to include certain checktypes in general or
+        some services from some hosts from inventory
+      * Config variable 'clustered_services' now has the same semantics
+	as ignored_checktypes and allows to make it host dependent.
+      * Allow magic tags PHYSICAL_HOSTS, CLUSTER_HOSTS and ALL_HOSTS at
+	all places, where lists of hosts are expected (except checks).
+	This fixes various problems that arise when using all_hosts at
+	those places:
+	  * all_hosts might by changed by another file in conf.d
+	  * all_hosts does not contain the cluster hosts
+      * Config file 'final.mk' is read after all other config files -
+	if it exists. You can put debug code there that prints the
+	contents of your variables.
+      * Use colored output only, if stdout is a tty. If you have
+	problems with colors, then you can pipe the output
+	through cat or less
+      * Fixed bug with host tags: didn't strip off tags when
+	processing configuration lists (occurs when using
+	custom host lists)
+      * mk_logwatch is now aware of inodes of logfiles. This
+	is important for fast rotating files: If the inode
+	of a logfile changes between two checks mk_logwatch
+	assumes that the complete content is new, even if
+	the new file is longer than the old one.
+      * check_mk makes sure that you do not have duplicate
+	hosts in all_hosts or clusters.
+
+1.0.30:
+      * Windows agent now automatically monitors all existing
+	event logs, not only "System" and "Application".
+
+1.0.29:
+      * Improved default Nagios configuration file:
+	added some missing templates, enter correct URLs
+	asked at setup time.
+      * IMPORANT: If you do not use the new default 
+	Nagios configuration file you need to rename
+	the template for aggregated services (summary
+	services) to check_mk_summarizes (old name
+	was 'check_mk_passive-summary'). Aggregated
+	services are *always* passive and do *never*
+	have performance data.
+      * Hopefully fixed CPU usage output on multi-CPU
+	machines
+      * Fixed Problem in Windows Agent: Eventlog monitoring
+	does now also work, if first record has not number 1
+	(relevant for larger/older eventlogs)
+      * Fixed bug in administration.html: Filename for Nagios
+	must be named check_mk.cfg and *not* main.mk. Nagios
+	does not read files without the suffix .cfg. 
+      * magic factor for df, that allows to automatgically 
+        adapt levels for very big or very small filesystems.
+      * new concept of host tags simplyfies configuration.
+      * IMPORTANT: at all places in the configuration where
+	lists of hosts are used those are not any longer
+	interpreted as regular expressions. Hostnames
+	must match exactly. Therefore the list [ "" ] does
+	not any longer represent the list of all hosts.
+	It is a bug now. Please write all_hosts instead
+	of [ "" ]. The semantics for service expressions
+	has not changed.
+      * Fixed problem with logwatch.php: Begin with
+	<?php, not with <?. This makes some older webservers
+	happy.
+      * Fixed problem in check ipmi: Handle corrupt output
+	from agent
+      * Cleaned up code, improved inline documentation
+      * Fixed problem with vms_df: default_filesystem_levels,
+	filesystem_levels and df magic number now are used
+	for df, vms_df and df_netapp together. Works now also
+	when precompiled.
+	
+1.0.28:
+      * IMPORTANT: the config file has been renamed from
+	check_mk.cfg to main.mk. This has been suggested
+	by several of my customers in order to avoid 
+	confusion with Nagios configuration files. In addition,
+	all check_mk's configuration file have to end in
+	'.mk'. This also holds for the autochecks. The 
+	setup.sh script will automatically rename all relevant
+	files. Users of RPM or DEB installations have to remove
+	the files themselves - sorry.
+      * Windows agent supports eventlogs. Current all Warning
+        and Error messages from 'System' and 'Application' are
+        being sent to check_mk. Events can be filtered on the
+	Nagios host.
+      * Fixed bug: direct RRD update didn't work. Should now.
+      * Fixed permission problems when run as root.
+      * Agent is expected to send its version in <<<check_mk>>>
+	now (not any longer in <<<mknagios>>>
+      * Fixed bug in Windows agent. Performance counters now output
+	correct values
+      * Change checks/winperf: Changed 'ops/sec' into MB/s.
+	That measures read and write disk throughput
+	(now warn/crit levels possible yet)
+      * new SNMP check 'ifoperstatus' for checking link
+        of network interfaces via SNMP standard MIB
+      * translated setup script into english
+      * fixed bug with missing directories in setup script
+      * made setup script's output nicer, show version information
+      * NEW: mk_logwatch - a new plugin for the linux/UNIX agent
+	for watching logfiles
+      * Better error handling with Nagios pipe
+      * Better handling of global error: make check_mk return
+	CRIT, when no data can retrieved at all.
+      * Added missing template 'check_mk_pingonly' in sample
+	Nagios config file (is needed for hosts without checks)
+	
+1.0.27:
+      * Ship source code of windows agent
+      * fix several typos
+      * fix bug: option --list-hosts did not work
+      * fix bug: precompile "-C" did not work because
+	of missing extension .py
+      * new option -U,--update: It combines -S, -H and
+	-U and writes the Nagios configuration into a
+	file (not to stdout).
+      * ship templates for PNP4Nagios matching most check_mk-checks.
+	Standard installation path is /usr/share/check_mk/pnp-templates
+	
+1.0.26:
+      -	Changed License to GNU GPL Version 2
+      * modules check_mk_admin and check_mk_base are both shipped
+	uncompiled.
+      * source code of windows agent togehter with Makefile shipped
+	with normal distribution
+      * checks/md now handles rare case where output of /proc/mdstat
+	shows three lines per array
+
+1.0.25:
+      * setup skript remembers paths
+
+1.0.24:
+      * fixed bug with precompile: Version of Agent was always 0
+
+1.0.23:
+      * fixed bug: check_config_variables was missing in precompiled
+	files
+      * new logwatch agent in Python plus new logwatch-check that
+	handles both the output from the old and the new agent
+
+1.0.22:
+      * Default timeout for TCP transfer increased from 3.0 to 60.0
+      * Windows agent supports '<<<mem>>>' that is compatible with Linux
+      * Windows agents performance counters output fixed
+      * Windows agent can now be cross-compiled with mingw on Linux
+      * New checktype winperf.cpuusage that retrieves the percentage
+	of CPU usage from windows (still has to be tested on Multi-CPU
+	machine)
+      * Fixed bug: logwatch_dir and logwatch_groupid got lost when
+	precompiling. 
+      * arithmetic for CPU usage on VMS multi-CPU machines changed
+
+1.0.21:
+      * fixed bug in checks/df: filesystem levels did not work
+	with precompiled checks
+
+1.0.20:
+      * new administration guide in doc/
+      * fixed bug: option -v now works independent of order
+      * fixed bug: in statgrab_net: variable was missing (affected -C)
+      * fixed bug: added missing variables, imported re (affected -C)
+      * check ipmi: new option ipmi_summarize: create only one check for all sensors
+      * new pnp-template for ipmi summarized ambient temperature
+ 
+1.0.19:
+      * Monitoring of Windows Services
+      * Fixed bug with check-specific default parameters
+      * Monitoring of VMS (agent not included yet)
+      * Retrieving of data via an external programm (e.g. SSH/RSH)
+      * setup.sh does not overwrite check_mk.cfg but installs
+	the new default file as check_mk.cfg-1.0.19
+      * Put hosts into default hostgroup if none is configured
